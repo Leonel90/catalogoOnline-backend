@@ -4,11 +4,11 @@ import { CreateCatalogoDto } from './dto/create-catalogo.dto';
 import { UpdateCatalogoDto } from './dto/update-catalogo.dto';
 import {PaginacionDto} from "../common/dto/paginacion.dto";
 
-@Controller('catalogo')
+@Controller('libro')
 export class CatalogoController {
   constructor(private readonly catalogoService: CatalogoService) {}
 
-  @Post()
+  @Post('/create')
   create(@Body() createCatalogoDto: CreateCatalogoDto) {
     return this.catalogoService.create(createCatalogoDto);
   }

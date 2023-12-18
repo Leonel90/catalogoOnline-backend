@@ -1,4 +1,4 @@
-import {IsInt, IsOptional, IsPositive, IsString} from "class-validator";
+import {IsArray, IsBoolean, IsInt, IsOptional, IsPositive, IsString} from "class-validator";
 import {Type} from "class-transformer";
 
 export class CreateCatalogoDto {
@@ -7,11 +7,23 @@ export class CreateCatalogoDto {
     nombre:string
 
     @IsString()
-    @IsOptional()
-    edicion?:string
+    edicion:string
 
     @IsInt()
-    @IsPositive()
-    @Type( ()=> Number)
     anio:number
+
+    @IsString()
+    @IsOptional()
+    detalle?:string
+
+    @IsString()
+    imagen: string
+
+    @IsBoolean()
+    estado: boolean
+
+    @IsString({ each: true})
+    @IsArray()
+    @IsOptional()
+    nombreauthor?: string[]
 }

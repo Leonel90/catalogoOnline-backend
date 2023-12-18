@@ -2,19 +2,30 @@ import {Injectable, NotFoundException} from '@nestjs/common';
 import { CreateCatalogoDto } from './dto/create-catalogo.dto';
 import { UpdateCatalogoDto } from './dto/update-catalogo.dto';
 import {InjectRepository} from "@nestjs/typeorm";
-import {Catalogo} from "./entities/catalogo.entity";
+import {Libro} from "./entities/libro.entity";
 import {Repository} from "typeorm";
 import {PaginacionDto} from "../common/dto/paginacion.dto";
+import { Author } from './entities/autor.entity';
 
 @Injectable()
 export class CatalogoService {
 
   constructor(
-      @InjectRepository(Catalogo)
-      private readonly producRepository:Repository<Catalogo>,) {}
+      @InjectRepository(Libro)
+      private readonly producRepository:Repository<Libro>,
+      @InjectRepository(Author)
+      private readonly authorRepository:Repository<Author>,
+      ) {}
+      
   async create(createCatalogoDto: CreateCatalogoDto) {
     try {
-      const catalogos = this.producRepository.create(createCatalogoDto);
+      const {nombreauthor = [], ...catalogoDetalles} = createCatalogoDto
+      const catalogos = this.producRepository.create(
+        {
+          ...catalogoDetalles,
+          nombreauthor:nombreauthor.map(nombreauthor => this.authorRepository.create({nombre: nombreauthor, apellido: nombreauthor, edad: nombreauthor}))
+        }
+        );
       await this.producRepository.save(catalogos)
       return catalogos
     } catch (error){
@@ -23,8 +34,8 @@ export class CatalogoService {
     }
   }
 
-  findAll(paginacionDto: PaginacionDto) {
-    const {limit=10, offset = 1} = paginacionDto;
+  async findAll(paginacionDto: PaginacionDto) {
+    const {limit=10, offset = 0} = paginacionDto;
     return this.producRepository.find({
       take: limit,
       skip: offset,
@@ -42,7 +53,8 @@ export class CatalogoService {
   async update(id: number, updateCatalogoDto: UpdateCatalogoDto) {
     const catalogos = await this.producRepository.preload({
       id: id,
-      ...updateCatalogoDto
+      ...updateCatalogoDto,
+      nombreauthor:[]
     })
     if (!catalogos)
       throw new NotFoundException("No se pudo eliminar");

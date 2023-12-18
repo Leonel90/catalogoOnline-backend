@@ -1,7 +1,7 @@
 import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
-import { Catalogo } from "./catalogo.entity";
+import { Libro } from "./libro.entity";
 
-@Entity()
+@Entity('Autor')
 export class Author {
     @PrimaryGeneratedColumn('increment')
     id:number;
@@ -14,9 +14,15 @@ export class Author {
     @Column('text',{
         default:0,
     })
-    Apellido:string;
+    apellido:string;
 
-    @Column('int')
-    edad:number;
+    @Column('text')
+    edad:string;
+
+    @ManyToOne(
+        ()=>Libro,
+        (libro)=>libro.nombreauthor
+    )
+    libro?: Libro
 
 }
